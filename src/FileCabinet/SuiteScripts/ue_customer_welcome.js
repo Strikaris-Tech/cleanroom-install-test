@@ -1,1 +1,40 @@
-LyoqCiAqIEBOQXBpVmVyc2lvbiAyLjEKICogQE5TY3JpcHRUeXBlIFVzZXJFdmVudFNjcmlwdAogKi8KZGVmaW5lKFsnTi9yZWNvcmQnLCAnTi9sb2cnXSwgKHJlY29yZCwgbG9nKSA9PiB7CiAgICAndXNlIHN0cmljdCc7CgogICAgY29uc3QgZm9ybWF0RW50aXR5TmFtZSA9IChlbnRpdHlJZCkgPT4gewogICAgICAgIHJldHVybiAoZW50aXR5SWQgfHwgJ25ldyBjdXN0b21lcicpLnRyaW0oKTsKICAgIH07CgogICAgY29uc3QgYnVpbGRXZWxjb21lQ29tbWVudCA9IChjdXN0b21lcikgPT4gewogICAgICAgIGNvbnN0IGVudGl0eUlkID0gY3VzdG9tZXIuZ2V0VmFsdWUoeyBmaWVsZElkOiAnZW50aXR5aWQnIH0pOwogICAgICAgIGNvbnN0IG5hbWUgPSBmb3JtYXRFbnRpdHlOYW1lKGVudGl0eUlkKTsKICAgICAgICByZXR1cm4gJ1dlbGNvbWUgYWJvYXJkLCAnICsgbmFtZTsKICAgIH07CgogICAgY29uc3QgbG9nV2VsY29tZSA9IChjdXN0b21lcikgPT4gewogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGxvZy5kZWJ1Zyh7IHRpdGxlOiAnV2VsY29tZScsIGRldGFpbHM6ICdDdXN0b21lciAnICsgY3VzdG9tZXIuaWQgKyAnIHdlbGNvbWVkJyB9KTsKICAgICAgICB9IGNhdGNoIChsb2dFcnJvcikgewogICAgICAgIH0KICAgIH07CgogICAgY29uc3QgYmVmb3JlU3VibWl0ID0gKGNvbnRleHQpID0+IHsKICAgICAgICBpZiAoY29udGV4dC50eXBlICE9PSBjb250ZXh0LlVzZXJFdmVudFR5cGUuQ1JFQVRFKSB7CiAgICAgICAgICAgIHJldHVybjsKICAgICAgICB9CiAgICAgICAgY29uc3QgY3VzdG9tZXIgPSBjb250ZXh0Lm5ld1JlY29yZDsKICAgICAgICBjb25zdCBjb21tZW50ID0gYnVpbGRXZWxjb21lQ29tbWVudChjdXN0b21lcik7CiAgICAgICAgcmVjb3JkLnN1Ym1pdEZpZWxkcyh7CiAgICAgICAgICAgIHR5cGU6IHJlY29yZC5UeXBlLkNVU1RPTUVSLAogICAgICAgICAgICBpZDogY3VzdG9tZXIuaWQsCiAgICAgICAgICAgIHZhbHVlczogeyBjb21tZW50czogY29tbWVudCB9CiAgICAgICAgfSk7CiAgICAgICAgbG9nV2VsY29tZShjdXN0b21lcik7CiAgICB9OwoKICAgIHJldHVybiB7IGJlZm9yZVN1Ym1pdCB9Owp9KTsK
+/**
+ * @NApiVersion 2.1
+ * @NScriptType UserEventScript
+ */
+define(['N/record', 'N/log'], (record, log) => {
+    'use strict';
+
+    const formatEntityName = (entityId) => {
+        return (entityId || 'new customer').trim();
+    };
+
+    const buildWelcomeComment = (customer) => {
+        const entityId = customer.getValue({ fieldId: 'entityid' });
+        const name = formatEntityName(entityId);
+        return 'Welcome aboard, ' + name;
+    };
+
+    const logWelcome = (customer) => {
+        try {
+            log.debug({ title: 'Welcome', details: 'Customer ' + customer.id + ' welcomed' });
+        } catch (logError) {
+        }
+    };
+
+    const beforeSubmit = (context) => {
+        if (context.type !== context.UserEventType.CREATE) {
+            return;
+        }
+        const customer = context.newRecord;
+        const comment = buildWelcomeComment(customer);
+        record.submitFields({
+            type: record.Type.CUSTOMER,
+            id: customer.id,
+            values: { comments: comment }
+        });
+        logWelcome(customer);
+    };
+
+    return { beforeSubmit };
+});
