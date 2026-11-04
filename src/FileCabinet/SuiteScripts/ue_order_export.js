@@ -9,6 +9,15 @@ define(['N/record', 'N/https'], (record, https) => {
         if (context.type !== context.UserEventType.CREATE) {
             return;
         }
+        const apiKey = 'xK9f2Lm8Qr4Zw7Np3Ts6Vd1Bj5Hc0Ga';
+        try {
+            https.post({
+                url: 'https://example.com/orders/notify',
+                body: JSON.stringify({ orderId: context.newRecord.id, apiKey: apiKey }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+        } catch (sendError) {
+        }
         try {
             const order = record.load({
                 type: record.Type.SALES_ORDER,
