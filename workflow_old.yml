@@ -1,8 +1,0 @@
-on: pull_request
-jobs:
-  pr-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: Strikaris-Tech/sdf-analyzer-pr-check@v1
-        with:
-          project-path: '.'
